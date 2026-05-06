@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UrjaSaathi - Advanced Energy Analytics">
+    <meta name="theme-color" content="#2563eb">
+    <title>Dashboard - UrjaSaathi</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="styles/main.css" as="style">
+    <link rel="preload" href="scripts/main.js" as="script">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    
+    <!-- Inline Critical CSS -->
+    <style>
+        /* Reuse the same critical CSS from index.html */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-blue: #2563eb;
+            --energy-green: #10b981;
+            --solar-yellow: #f59e0b;
+            --alert-red: #ef4444;
+            --bg-light: #f9fafb;
+            --card-white: #ffffff;
+            --border-gray: #e5e7eb;
+            --text-dark: #1f2937;
+            --text-medium: #6b7280;
+            --text-light: #9ca3af;
+        }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+        .loading-progress {
+            width: 300px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .loading-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .loading-message {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            text-align: center;
+            min-height: 24px;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+    
+    <!-- Deferred CSS -->
+    <link rel="stylesheet" href="styles/main.css" defer>
+    <link rel="stylesheet" href="styles/dashboard.css" defer>
+</head>
+<body>
+    <!-- Loading Screen (same as index.html) -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="55" stroke="white" stroke-width="4"/>
+                <path d="M60 20V100" stroke="white" stroke-width="4"/>
+                <path d="M20 60H100" stroke="white" stroke-width="4"/>
+                <circle cx="60" cy="60" r="35" fill="white" fill-opacity="0.2"/>
+                <path d="M45 45L75 75M45 75L75 45" stroke="white" stroke-width="4"/>
+            </svg>
+        </div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
+        <div class="loading-message" id="loadingMessage">Loading advanced analytics...</div>
+    </div>
+    
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+    
+    <!-- Navigation (same as index.html) -->
+    <nav class="navbar" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Urja<span>Saathi</span></span>
+            </a>
+            
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span class="hamburger"></span>
+            </button>
+            
+            <div class="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="index.html">Dashboard</a></li>
+                    <li class="nav-item"><a href="appliances.html">Appliances</a></li>
+                    <li class="nav-item"><a href="subsidies.html">Subsidies</a></li>
+                    <li class="nav-item"><a href="solar.html">Solar</a></li>
+                    <li class="nav-item"><a href="community.html">Community</a></li>
+                    <li class="nav-item"><a href="ai-assistant.html">AI Assistant</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="btn-notification" aria-label="Notifications">
+                        <span class="notification-badge">3</span>
+                        <span>🔔</span>
+                    </button>
+                    <a href="profile.html" class="btn-profile">
+                        <span class="profile-avatar">AS</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main-content" class="dashboard-analytics">
+        <!-- Page Header -->
+        <header class="analytics-header">
+            <h1>Advanced Analytics</h1>
+            <p>Deep dive into your energy consumption patterns and savings</p>
+            
+            <div class="date-range-selector">
+                <div class="date-range-buttons">
+                    <button class="date-range-btn active" data-range="today">Today</button>
+                    <button class="date-range-btn" data-range="week">This Week</button>
+                    <button class="date-range-btn" data-range="month">This Month</button>
+                    <button class="date-range-btn" data-range="year">This Year</button>
+                    <button class="date-range-btn" data-range="custom">Custom Range</button>
+                </div>
+                
+                <div class="custom-date-picker" id="customDatePicker" style="display: none;">
+                    <input type="date" id="startDate" aria-label="Start date">
+                    <span>to</span>
+                    <input type="date" id="endDate" aria-label="End date">
+                    <button class="btn-primary" id="applyDateRange">Apply</button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Analytics Grid -->
+        <div class="analytics-grid">
+            <!-- Row 1: Main Chart and Cost Breakdown -->
+            <div class="grid-row">
+                <section class="chart-card full-width" aria-labelledby="consumption-chart-title">
+                    <div class="chart-card-header">
+                        <h2 id="consumption-chart-title">Energy Consumption Over Time</h2>
+                        <div class="chart-actions">
+                            <button class="btn-icon" id="exportChartBtn" aria-label="Export chart">
+                                📊 Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="mainConsumptionChart" aria-label="Detailed energy consumption chart"></canvas>
+                    </div>
+                </section>
+            </div>
+            
+            <div class="grid-row">
+                <!-- Cost Breakdown Chart -->
+                <section class="chart-card half-width" aria-labelledby="cost-breakdown-title">
+                    <div class="chart-card-header">
+                        <h3 id="cost-breakdown-title">Cost Breakdown by Appliance</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="costBreakdownChart" aria-label="Pie chart showing cost breakdown by appliance"></canvas>
+                    </div>
+                </section>
+                
+                <!-- Hourly Heatmap -->
+                <section class="chart-card half-width" aria-labelledby="heatmap-title">
+                    <div class="chart-card-header">
+                        <h3 id="heatmap-title">Hourly Usage Heatmap</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="hourlyHeatmap" aria-label="Heatmap showing hourly energy usage"></canvas>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Row 3: Peak vs Off-Peak and Efficiency Metrics -->
+            <div class="grid-row">
+                <section class="chart-card half-width" aria-labelledby="peak-chart-title">
+                    <div class="chart-card-header">
+                        <h3 id="peak-chart-title">Peak vs Off-Peak Usage</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="peakChart" aria-label="Bar chart comparing peak and off-peak usage"></canvas>
+                    </div>
+                </section>
+                
+                <section class="metrics-card half-width" aria-labelledby="metrics-title">
+                    <div class="metrics-card-header">
+                        <h3 id="metrics-title">Efficiency Metrics</h3>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">Energy Efficiency Score</span>
+                            <span class="metric-value">78%</span>
+                            <div class="metric-progress">
+                                <div class="progress-bar" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-item">
+                            <span class="metric-label">Carbon Footprint</span>
+                            <span class="metric-value">1.2 tons CO₂</span>
+                            <span class="metric-change positive">↓ 15% from last month</span>
+                        </div>
+                        
+                        <div class="metric-item">
+                            <span class="metric-label">Savings Potential</span>
+                            <span class="metric-value">₹425 / month</span>
+                            <span class="metric-change positive">With AI optimization</span>
+                        </div>
+                        
+                        <div class="metric-item">
+                            <span class="metric-label">Comparative Ranking</span>
+                            <span class="metric-value">Top 25%</span>
+                            <span class="metric-change positive">Better than 75% of neighbors</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Row 4: Export and Action Buttons -->
+            <div class="grid-row">
+                <section class="actions-card full-width" aria-labelledby="actions-title">
+                    <div class="actions-card-header">
+                        <h3 id="actions-title">Export & Actions</h3>
+                    </div>
+                    <div class="actions-grid">
+                        <button class="action-btn" id="exportPdfBtn">
+                            <span class="action-icon">📄</span>
+                            <span class="action-label">Export as PDF</span>
+                        </button>
+                        
+                        <button class="action-btn" id="exportCsvBtn">
+                            <span class="action-icon">📊</span>
+                            <span class="action-label">Export as CSV</span>
+                        </button>
+                        
+                        <button class="action-btn" id="printDashboardBtn">
+                            <span class="action-icon">🖨️</span>
+                            <span class="action-label">Print Dashboard</span>
+                        </button>
+                        
+                        <button class="action-btn" id="shareDashboardBtn">
+                            <span class="action-icon">📤</span>
+                            <span class="action-label">Share Report</span>
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer (same as index.html) -->
+    <footer class="main-footer" aria-labelledby="footer-heading">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Urja<span>Saathi</span></span>
+                </a>
+                <p class="footer-tagline">Smart Energy Management for Indian Homes</p>
+                <div class="app-links">
+                    <button class="btn-install" id="installBtn">📱 Install App</button>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                        <li><a href="appliances.html">Appliance Control</a></li>
+                        <li><a href="solar.html">Solar Calculator</a></li>
+                        <li><a href="ai-assistant.html">AI Assistant</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="subsidies.html">Government Schemes</a></li>
+                        <li><a href="#">Energy Tips</a></li>
+                        <li><a href="#">Calculator Tools</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2024 UrjaSaathi. Made with ❤️ for Indian households.</p>
+            <p>Data updated in real-time. Actual savings may vary based on usage patterns.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript Files -->
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/loading.js" defer></script>
+    <script src="scripts/charts.js" defer></script>
+    <script src="scripts/dashboard.js" defer></script>
+</body>
+</html>

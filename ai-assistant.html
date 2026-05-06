@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UrjaSaathi - AI Energy Assistant">
+    <meta name="theme-color" content="#10b981">
+    <title>AI Assistant - UrjaSaathi</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="styles/main.css" as="style">
+    <link rel="preload" href="styles/ai-assistant.css" as="style">
+    <link rel="preload" href="scripts/main.js" as="script">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Inline Critical CSS -->
+    <style>
+        /* Reuse the same critical CSS */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-blue: #2563eb;
+            --energy-green: #10b981;
+            --solar-yellow: #f59e0b;
+            --alert-red: #ef4444;
+            --bg-light: #f9fafb;
+            --card-white: #ffffff;
+            --border-gray: #e5e7eb;
+            --text-dark: #1f2937;
+            --text-medium: #6b7280;
+            --text-light: #9ca3af;
+        }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+        .loading-progress {
+            width: 300px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .loading-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .loading-message {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            text-align: center;
+            min-height: 24px;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+    
+    <!-- Deferred CSS -->
+    <link rel="stylesheet" href="styles/main.css" defer>
+    <link rel="stylesheet" href="styles/ai-assistant.css" defer>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="55" stroke="white" stroke-width="4"/>
+                <path d="M60 20V100" stroke="white" stroke-width="4"/>
+                <path d="M20 60H100" stroke="white" stroke-width="4"/>
+                <circle cx="60" cy="60" r="35" fill="white" fill-opacity="0.2"/>
+                <path d="M45 45L75 75M45 75L75 45" stroke="white" stroke-width="4"/>
+            </svg>
+        </div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
+        <div class="loading-message" id="loadingMessage">Starting AI Assistant...</div>
+    </div>
+    
+    <!-- Skip to main content -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+    
+    <!-- Navigation -->
+    <nav class="navbar" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Urja<span>Saathi</span></span>
+            </a>
+            
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span class="hamburger"></span>
+            </button>
+            
+            <div class="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="index.html">Dashboard</a></li>
+                    <li class="nav-item"><a href="appliances.html">Appliances</a></li>
+                    <li class="nav-item"><a href="subsidies.html">Subsidies</a></li>
+                    <li class="nav-item"><a href="solar.html">Solar</a></li>
+                    <li class="nav-item"><a href="community.html">Community</a></li>
+                    <li class="nav-item active"><a href="ai-assistant.html" aria-current="page">AI Assistant</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="btn-notification" aria-label="Notifications">
+                        <span class="notification-badge">3</span>
+                        <span>🔔</span>
+                    </button>
+                    <a href="profile.html" class="btn-profile">
+                        <span class="profile-avatar">AS</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main-content" class="ai-assistant-page">
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1>🤖 AI Energy Assistant</h1>
+                <p>Your personal energy consultant available 24/7</p>
+                <div class="assistant-status">
+                    <span class="status-dot online"></span>
+                    <span>Online & Ready</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-primary" id="quickTipsBtn">
+                    💡 Quick Tips
+                </button>
+                <button class="btn-secondary" id="emergencyBtn">
+                    🆘 Energy Emergency
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Chat Interface -->
+        <div class="chat-container">
+            <!-- Left Panel: Chat History & Quick Actions -->
+            <div class="left-panel">
+                <!-- Quick Actions -->
+                <div class="quick-actions-card">
+                    <h3>⚡ Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" data-action="usage">
+                            <span>📊</span>
+                            Current Usage
+                        </button>
+                        <button class="action-btn" data-action="savings">
+                            <span>💰</span>
+                            Savings Tips
+                        </button>
+                        <button class="action-btn" data-action="subsidy">
+                            <span>🏛️</span>
+                            Subsidy Check
+                        </button>
+                        <button class="action-btn" data-action="solar">
+                            <span>☀️</span>
+                            Solar Advice
+                        </button>
+                        <button class="action-btn" data-action="appliance">
+                            <span>🔌</span>
+                            Appliance Control
+                        </button>
+                        <button class="action-btn" data-action="emergency">
+                            <span>🚨</span>
+                            Emergency
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Conversation History -->
+                <div class="history-card">
+                    <h3>📝 Recent Conversations</h3>
+                    <div class="history-list">
+                        <button class="history-item active">
+                            <span class="history-icon">💬</span>
+                            <div class="history-content">
+                                <h4>Today's Usage Analysis</h4>
+                                <p>Just now</p>
+                            </div>
+                        </button>
+                        <button class="history-item">
+                            <span class="history-icon">💬</span>
+                            <div class="history-content">
+                                <h4>Solar Panel Inquiry</h4>
+                                <p>2 hours ago</p>
+                            </div>
+                        </button>
+                        <button class="history-item">
+                            <span class="history-icon">💬</span>
+                            <div class="history-content">
+                                <h4>AC Usage Tips</h4>
+                                <p>Yesterday</p>
+                            </div>
+                        </button>
+                        <button class="history-item">
+                            <span class="history-icon">💬</span>
+                            <div class="history-content">
+                                <h4>Bill Prediction</h4>
+                                <p>3 days ago</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Voice Controls -->
+                <div class="voice-controls-card">
+                    <h3>🎙️ Voice Controls</h3>
+                    <div class="voice-controls">
+                        <button class="voice-btn" id="startListening">
+                            <span class="voice-icon">🎤</span>
+                            Start Listening
+                        </button>
+                        <div class="voice-status" id="voiceStatus">
+                            Click to speak
+                        </div>
+                        <div class="voice-languages">
+                            <span class="lang-badge active">English</span>
+                            <span class="lang-badge">Hindi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Panel: Chat Interface -->
+            <div class="right-panel">
+                <!-- Chat Header -->
+                <div class="chat-header">
+                    <div class="chat-bot-info">
+                        <div class="bot-avatar">
+                            <span>🤖</span>
+                        </div>
+                        <div>
+                            <h3>UrjaSaathi AI</h3>
+                            <p>Energy Management Expert</p>
+                        </div>
+                    </div>
+                    <div class="chat-stats">
+                        <div class="stat">
+                            <span class="stat-value">42</span>
+                            <span class="stat-label">Tips Given</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">₹1,250</span>
+                            <span class="stat-label">Saved</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Messages -->
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will be inserted here by JavaScript -->
+                </div>
+                
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="input-actions">
+                        <button class="input-action-btn" id="voiceInputBtn" title="Voice input">
+                            🎤
+                        </button>
+                        <button class="input-action-btn" id="attachFileBtn" title="Attach file">
+                            📎
+                        </button>
+                        <button class="input-action-btn" id="suggestionsBtn" title="Quick suggestions">
+                            💡
+                        </button>
+                    </div>
+                    
+                    <div class="chat-input-wrapper">
+                        <input type="text" 
+                               id="chatInput" 
+                               placeholder="Ask me anything about energy savings, subsidies, or appliance control..."
+                               aria-label="Type your message">
+                        <button class="btn-send" id="sendMessage">
+                            <span>➤</span>
+                        </button>
+                    </div>
+                    
+                    <div class="quick-suggestions" id="quickSuggestions">
+                        <button class="suggestion-btn" data-query="What's my current usage?">
+                            What's my current usage?
+                        </button>
+                        <button class="suggestion-btn" data-query="How can I save money?">
+                            How can I save money?
+                        </button>
+                        <button class="suggestion-btn" data-query="Check subsidy eligibility">
+                            Check subsidy eligibility
+                        </button>
+                        <button class="suggestion-btn" data-query="Solar recommendations">
+                            Solar recommendations
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Smart Features Section -->
+        <section class="smart-features">
+            <h2>🔮 Smart AI Features</h2>
+            <p>Advanced capabilities to optimize your energy consumption</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Predictive Analysis</h3>
+                    <p>Forecasts your energy usage and suggests optimizations</p>
+                    <div class="feature-stats">
+                        <span class="stat">95% Accuracy</span>
+                        <span class="stat">₹500 Avg Savings</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚨</div>
+                    <h3>Anomaly Detection</h3>
+                    <p>Alerts you about unusual energy consumption patterns</p>
+                    <div class="feature-stats">
+                        <span class="stat">Real-time Alerts</span>
+                        <span class="stat">Prevents Waste</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Personalized Reports</h3>
+                    <p>Weekly energy reports with actionable insights</p>
+                    <div class="feature-stats">
+                        <span class="stat">Auto-generated</span>
+                        <span class="stat">Custom Tips</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Carbon Footprint</h3>
+                    <p>Tracks your environmental impact and suggests reductions</p>
+                    <div class="feature-stats">
+                        <span class="stat">CO₂ Tracking</span>
+                        <span class="stat">Green Goals</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="main-footer" aria-labelledby="footer-heading">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Urja<span>Saathi</span></span>
+                </a>
+                <p class="footer-tagline">Smart Energy Management for Indian Homes</p>
+                <div class="app-links">
+                    <button class="btn-install" id="installBtn">📱 Install App</button>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html">Dashboard</a></li>
+                        <li><a href="appliances.html">Appliance Control</a></li>
+                        <li><a href="solar.html">Solar Calculator</a></li>
+                        <li><a href="ai-assistant.html">AI Assistant</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="subsidies.html">Government Schemes</a></li>
+                        <li><a href="#">Energy Tips</a></li>
+                        <li><a href="#">Calculator Tools</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2024 UrjaSaathi. Made with ❤️ for Indian households.</p>
+            <p>The AI assistant provides suggestions. Consult professionals for major decisions.</p>
+        </div>
+    </footer>
+    
+    <!-- Quick Tips Modal -->
+    <div class="modal" id="quickTipsModal" role="dialog" aria-labelledby="quickTipsModalTitle" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="quickTipsModalTitle">💡 Quick Energy Tips</h3>
+                <button class="modal-close" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="tips-list">
+                    <!-- Tips will be inserted by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Emergency Modal -->
+    <div class="modal" id="emergencyModal" role="dialog" aria-labelledby="emergencyModalTitle" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="emergencyModalTitle">🚨 Energy Emergency</h3>
+                <button class="modal-close" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="emergency-options">
+                    <button class="emergency-option" data-emergency="power-outage">
+                        <span class="option-icon">⚡</span>
+                        <div>
+                            <h4>Power Outage</h4>
+                            <p>Report outage & get estimated restoration time</p>
+                        </div>
+                    </button>
+                    <button class="emergency-option" data-emergency="high-bill">
+                        <span class="option-icon">💰</span>
+                        <div>
+                            <h4>Unexpected High Bill</h4>
+                            <p>Analyze causes & dispute if needed</p>
+                        </div>
+                    </button>
+                    <button class="emergency-option" data-emergency="appliance-fault">
+                        <span class="option-icon">🔌</span>
+                        <div>
+                            <h4>Appliance Malfunction</h4>
+                            <p>Diagnose & find repair services</p>
+                        </div>
+                    </button>
+                    <button class="emergency-option" data-emergency="safety">
+                        <span class="option-icon">⚠️</span>
+                        <div>
+                            <h4>Electrical Safety Issue</h4>
+                            <p>Immediate steps & contact electrician</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/loading.js" defer></script>
+    <script src="scripts/ai-assistant.js" defer></script>
+    <script src="scripts/voice.js" defer></script>
+</body>
+</html>

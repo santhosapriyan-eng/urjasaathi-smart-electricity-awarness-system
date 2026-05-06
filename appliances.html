@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UrjaSaathi - Smart Appliance Control Center">
+    <meta name="theme-color" content="#2563eb">
+    <title>Appliance Control - UrjaSaathi</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="styles/main.css" as="style">
+    <link rel="preload" href="styles/appliances.css" as="style">
+    <link rel="preload" href="scripts/main.js" as="script">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Inline Critical CSS -->
+    <style>
+        /* Reuse the same critical CSS from index.html */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-blue: #2563eb;
+            --energy-green: #10b981;
+            --solar-yellow: #f59e0b;
+            --alert-red: #ef4444;
+            --bg-light: #f9fafb;
+            --card-white: #ffffff;
+            --border-gray: #e5e7eb;
+            --text-dark: #1f2937;
+            --text-medium: #6b7280;
+            --text-light: #9ca3af;
+        }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+        .loading-progress {
+            width: 300px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .loading-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .loading-message {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            text-align: center;
+            min-height: 24px;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+    
+    <!-- Deferred CSS -->
+    <link rel="stylesheet" href="styles/main.css" defer>
+    <link rel="stylesheet" href="styles/appliances.css" defer>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="55" stroke="white" stroke-width="4"/>
+                <path d="M60 20V100" stroke="white" stroke-width="4"/>
+                <path d="M20 60H100" stroke="white" stroke-width="4"/>
+                <circle cx="60" cy="60" r="35" fill="white" fill-opacity="0.2"/>
+                <path d="M45 45L75 75M45 75L75 45" stroke="white" stroke-width="4"/>
+            </svg>
+        </div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
+        <div class="loading-message" id="loadingMessage">Loading appliance controls...</div>
+    </div>
+    
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+    
+    <!-- Navigation -->
+    <nav class="navbar" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Urja<span>Saathi</span></span>
+            </a>
+            
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span class="hamburger"></span>
+            </button>
+            
+            <div class="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="index.html">Dashboard</a></li>
+                    <li class="nav-item active"><a href="appliances.html" aria-current="page">Appliances</a></li>
+                    <li class="nav-item"><a href="subsidies.html">Subsidies</a></li>
+                    <li class="nav-item"><a href="solar.html">Solar</a></li>
+                    <li class="nav-item"><a href="community.html">Community</a></li>
+                    <li class="nav-item"><a href="ai-assistant.html">AI Assistant</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="btn-notification" aria-label="Notifications">
+                        <span class="notification-badge">3</span>
+                        <span>🔔</span>
+                    </button>
+                    <a href="profile.html" class="btn-profile">
+                        <span class="profile-avatar">AS</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main-content" class="appliances-page">
+        <!-- Page Header -->
+        <header class="page-header">
+            <h1>Smart Appliance Control Center</h1>
+            <p>Monitor and control all your devices in real-time</p>
+        </header>
+        
+        <!-- Quick Stats Bar -->
+        <div class="quick-stats-bar">
+            <div class="stat">
+                <span class="stat-label">Total Appliances</span>
+                <span class="stat-value" id="totalAppliances">10</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Currently On</span>
+                <span class="stat-value" id="appliancesOn">6</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Total Power</span>
+                <span class="stat-value" id="totalPower">2.9 kW</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Today's Cost</span>
+                <span class="stat-value">₹<span id="totalCost">1,125</span></span>
+            </div>
+        </div>
+        
+        <!-- Control Center -->
+        <div class="appliances-control-center">
+            <!-- Left Panel: Controls & Filters -->
+            <div class="control-panel">
+                <!-- Search & Filters -->
+                <div class="filters-section">
+                    <div class="search-box">
+                        <input type="text" id="applianceSearch" placeholder="Search appliances..." aria-label="Search appliances">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    
+                    <div class="category-filters">
+                        <h3>Categories</h3>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-category="all">All</button>
+                            <button class="filter-btn" data-category="cooling">❄️ Cooling</button>
+                            <button class="filter-btn" data-category="kitchen">🍳 Kitchen</button>
+                            <button class="filter-btn" data-category="lighting">💡 Lighting</button>
+                            <button class="filter-btn" data-category="heating">🔥 Heating</button>
+                            <button class="filter-btn" data-category="entertainment">📺 Entertainment</button>
+                            <button class="filter-btn" data-category="utility">🔧 Utility</button>
+                        </div>
+                    </div>
+                    
+                    <div class="sort-options">
+                        <h3>Sort By</h3>
+                        <select id="sortSelect" aria-label="Sort appliances">
+                            <option value="name">Name (A-Z)</option>
+                            <option value="power">Power (High-Low)</option>
+                            <option value="cost">Cost (High-Low)</option>
+                            <option value="usage">Usage (High-Low)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Bulk Actions -->
+                <div class="bulk-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="btn-bulk" id="turnAllOn">
+                            <span>🔌</span>
+                            Turn All On
+                        </button>
+                        <button class="btn-bulk" id="turnAllOff">
+                            <span>🔋</span>
+                            Turn All Off
+                        </button>
+                        <button class="btn-bulk" id="optimizeSchedule">
+                            <span>⏰</span>
+                            Optimize Schedule
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Energy Savings Tips -->
+                <div class="tips-section">
+                    <h3>💡 Energy Saving Tips</h3>
+                    <ul class="tips-list">
+                        <li>Use AC at 24°C instead of 18°C - Save ₹300/month</li>
+                        <li>Turn off appliances at plug point - Save ₹150/month</li>
+                        <li>Use LED bulbs instead of CFL - Save ₹200/month</li>
+                        <li>Run washing machine with full load - Save ₹100/month</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Right Panel: Appliance Grid -->
+            <div class="appliances-grid-section">
+                <div class="section-header">
+                    <h2>Your Appliances</h2>
+                    <button class="btn-primary" id="addApplianceBtn">
+                        <span>+</span>
+                        Add New Appliance
+                    </button>
+                </div>
+                
+                <!-- Appliance Grid -->
+                <div class="appliances-grid" id="applianceGrid">
+                    <!-- Dynamic content loaded by JavaScript -->
+                </div>
+                
+                <!-- Scheduling Section -->
+                <div class="scheduling-section">
+                    <div class="section-header">
+                        <h2>📅 Smart Scheduling</h2>
+                        <button class="btn-secondary" id="viewCalendarBtn">
+                            View Calendar
+                        </button>
+                    </div>
+                    
+                    <div class="schedules-grid">
+                        <div class="schedule-card">
+                            <div class="schedule-header">
+                                <span class="schedule-icon">☀️</span>
+                                <div>
+                                    <h4>Morning Routine</h4>
+                                    <p class="schedule-time">06:00 - 08:00</p>
+                                </div>
+                            </div>
+                            <div class="schedule-appliances">
+                                <span class="appliance-tag">💡 Lights</span>
+                                <span class="appliance-tag">🔥 Geyser</span>
+                            </div>
+                            <div class="schedule-status active">
+                                <span class="status-dot"></span>
+                                Active
+                            </div>
+                        </div>
+                        
+                        <div class="schedule-card">
+                            <div class="schedule-header">
+                                <span class="schedule-icon">🌙</span>
+                                <div>
+                                    <h4>Night Mode</h4>
+                                    <p class="schedule-time">23:00 - 06:00</p>
+                                </div>
+                            </div>
+                            <div class="schedule-appliances">
+                                <span class="appliance-tag">💡 All Lights</span>
+                                <span class="appliance-tag">📺 Entertainment</span>
+                            </div>
+                            <div class="schedule-status active">
+                                <span class="status-dot"></span>
+                                Active
+                            </div>
+                        </div>
+                        
+                        <div class="schedule-card">
+                            <div class="schedule-header">
+                                <span class="schedule-icon">💰</span>
+                                <div>
+                                    <h4>Peak Hour Savings</h4>
+                                    <p class="schedule-time">18:00 - 22:00</p>
+                                </div>
+                            </div>
+                            <div class="schedule-appliances">
+                                <span class="appliance-tag">❄️ AC Reduced</span>
+                                <span class="appliance-tag">🧺 Washing Machine</span>
+                            </div>
+                            <div class="schedule-status">
+                                <span class="status-dot"></span>
+                                Inactive
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="automation-rules">
+                        <h3>🤖 Automation Rules</h3>
+                        <div class="rules-list">
+                            <div class="rule-item">
+                                <div class="rule-content">
+                                    <h4>Turn off AC when window open</h4>
+                                    <p>Save energy when windows are open</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="rule-item">
+                                <div class="rule-content">
+                                    <h4>Dim lights during movies</h4>
+                                    <p>Automatically dim when TV is on</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="rule-item">
+                                <div class="rule-content">
+                                    <h4>Turn off all when leaving</h4>
+                                    <p>Based on phone location</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Appliance Details Modal -->
+        <div class="modal" id="applianceModal" role="dialog" aria-labelledby="applianceModalTitle" hidden>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="applianceModalTitle">Appliance Details</h3>
+                    <button class="modal-close" aria-label="Close modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="appliance-details">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add Appliance Modal -->
+        <div class="modal" id="addApplianceModal" role="dialog" aria-labelledby="addApplianceModalTitle" hidden>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="addApplianceModalTitle">Add New Appliance</h3>
+                    <button class="modal-close" aria-label="Close modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="newApplianceForm">
+                        <!-- Dynamic form content -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="main-footer" aria-labelledby="footer-heading">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Urja<span>Saathi</span></span>
+                </a>
+                <p class="footer-tagline">Smart Energy Management for Indian Homes</p>
+                <div class="app-links">
+                    <button class="btn-install" id="installBtn">📱 Install App</button>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html">Dashboard</a></li>
+                        <li><a href="appliances.html">Appliance Control</a></li>
+                        <li><a href="solar.html">Solar Calculator</a></li>
+                        <li><a href="ai-assistant.html">AI Assistant</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="subsidies.html">Government Schemes</a></li>
+                        <li><a href="#">Energy Tips</a></li>
+                        <li><a href="#">Calculator Tools</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2024 UrjaSaathi. Made with ❤️ for Indian households.</p>
+            <p>Data updated in real-time. Actual savings may vary based on usage patterns.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript Files -->
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/loading.js" defer></script>
+    <script src="scripts/appliances.js" defer></script>
+</body>
+</html>

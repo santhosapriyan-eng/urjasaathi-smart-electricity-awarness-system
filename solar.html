@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UrjaSaathi - Solar Energy Calculator & Marketplace">
+    <meta name="theme-color" content="#f59e0b">
+    <title>Solar Calculator - UrjaSaathi</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="styles/main.css" as="style">
+    <link rel="preload" href="styles/solar.css" as="style">
+    <link rel="preload" href="scripts/main.js" as="script">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Inline Critical CSS -->
+    <style>
+        /* Reuse the same critical CSS */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-blue: #2563eb;
+            --energy-green: #10b981;
+            --solar-yellow: #f59e0b;
+            --alert-red: #ef4444;
+            --bg-light: #f9fafb;
+            --card-white: #ffffff;
+            --border-gray: #e5e7eb;
+            --text-dark: #1f2937;
+            --text-medium: #6b7280;
+            --text-light: #9ca3af;
+        }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+        .loading-progress {
+            width: 300px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .loading-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .loading-message {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            text-align: center;
+            min-height: 24px;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+    
+    <!-- Deferred CSS -->
+    <link rel="stylesheet" href="styles/main.css" defer>
+    <link rel="stylesheet" href="styles/solar.css" defer>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="55" stroke="white" stroke-width="4"/>
+                <path d="M60 20V100" stroke="white" stroke-width="4"/>
+                <path d="M20 60H100" stroke="white" stroke-width="4"/>
+                <circle cx="60" cy="60" r="35" fill="white" fill-opacity="0.2"/>
+                <path d="M45 45L75 75M45 75L75 45" stroke="white" stroke-width="4"/>
+            </svg>
+        </div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
+        <div class="loading-message" id="loadingMessage">Loading solar calculator...</div>
+    </div>
+    
+    <!-- Skip to main content -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+    
+    <!-- Navigation -->
+    <nav class="navbar" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Urja<span>Saathi</span></span>
+            </a>
+            
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span class="hamburger"></span>
+            </button>
+            
+            <div class="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="index.html">Dashboard</a></li>
+                    <li class="nav-item"><a href="appliances.html">Appliances</a></li>
+                    <li class="nav-item"><a href="subsidies.html">Subsidies</a></li>
+                    <li class="nav-item active"><a href="solar.html" aria-current="page">Solar</a></li>
+                    <li class="nav-item"><a href="community.html">Community</a></li>
+                    <li class="nav-item"><a href="ai-assistant.html">AI Assistant</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="btn-notification" aria-label="Notifications">
+                        <span class="notification-badge">3</span>
+                        <span>🔔</span>
+                    </button>
+                    <a href="profile.html" class="btn-profile">
+                        <span class="profile-avatar">AS</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main-content" class="solar-page">
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1>☀️ Solar Energy Hub</h1>
+                <p>Calculate solar ROI, explore financing, and find certified installers</p>
+                <div class="solar-badge">
+                    <span class="badge-icon">🏆</span>
+                    <span>#1 Solar Recommendation Platform in India</span>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat">
+                    <span class="stat-value">25+</span>
+                    <span class="stat-label">Years Warranty</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">4-5</span>
+                    <span class="stat-label">Years Payback</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">₹78K</span>
+                    <span class="stat-label">Govt Subsidy</span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Calculator Section -->
+        <section class="solar-calculator-section">
+            <div class="calculator-container">
+                <!-- Left: Input Panel -->
+                <div class="calculator-inputs">
+                    <div class="section-header">
+                        <h2>🧮 Solar Calculator</h2>
+                        <p>Get personalized solar recommendations in 2 minutes</p>
+                    </div>
+                    
+                    <form id="solarCalculator" class="calculator-form">
+                        <div class="form-group">
+                            <label for="location">📍 Location</label>
+                            <div class="input-with-action">
+                                <input type="text" id="location" value="Delhi, India" readonly>
+                                <button type="button" class="btn-icon" id="detectLocation" aria-label="Detect location">
+                                    📍
+                                </button>
+                            </div>
+                            <div class="input-hint">Avg. sunlight: 5.5 hours/day in Delhi</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="monthlyConsumption">⚡ Monthly Electricity Consumption (kWh)</label>
+                            <div class="input-with-slider">
+                                <input type="range" id="consumptionSlider" min="100" max="2000" step="10" value="340">
+                                <div class="slider-value">
+                                    <input type="number" id="monthlyConsumption" value="340" min="100" max="2000">
+                                    <span>kWh/month</span>
+                                </div>
+                            </div>
+                            <div class="input-hint">Indian avg: 250-400 kWh for middle class</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="roofArea">🏠 Available Roof Area (sq ft)</label>
+                            <div class="input-with-slider">
+                                <input type="range" id="roofAreaSlider" min="100" max="2000" step="10" value="500">
+                                <div class="slider-value">
+                                    <input type="number" id="roofArea" value="500" min="100" max="2000">
+                                    <span>sq ft</span>
+                                </div>
+                            </div>
+                            <div class="input-hint">1 kW requires ~100 sq ft</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="electricityRate">💰 Current Electricity Rate (₹/kWh)</label>
+                            <div class="input-with-slider">
+                                <input type="range" id="rateSlider" min="5" max="15" step="0.5" value="7.5">
+                                <div class="slider-value">
+                                    <input type="number" id="electricityRate" value="7.5" min="5" max="15" step="0.5">
+                                    <span>₹/kWh</span>
+                                </div>
+                            </div>
+                            <div class="input-hint">India avg: ₹6-₹12 depending on state</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>🏛️ Government Subsidy</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-option">
+                                    <input type="checkbox" id="pmSubsidy" checked>
+                                    <span class="checkbox-label">PM Surya Ghar Yojana (40-60% subsidy)</span>
+                                </label>
+                                <label class="checkbox-option">
+                                    <input type="checkbox" id="stateSubsidy">
+                                    <span class="checkbox-label">State-specific subsidy (varies)</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary calculate-btn">
+                            Calculate Solar ROI
+                            <span class="btn-icon">☀️</span>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Right: Results Panel -->
+                <div class="calculator-results">
+                    <div class="results-header">
+                        <h2>✨ Your Solar Analysis</h2>
+                        <button class="btn-secondary" id="downloadReport">
+                            📥 Download Report
+                        </button>
+                    </div>
+                    
+                    <div class="results-summary">
+                        <div class="recommendation-card">
+                            <div class="rec-badge best">
+                                <span>⭐ Best Match</span>
+                            </div>
+                            <div class="rec-content">
+                                <h3>3 kW Solar System</h3>
+                                <div class="rec-stats">
+                                    <div class="stat">
+                                        <span class="stat-label">System Size</span>
+                                        <span class="stat-value">3 kW</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-label">Roof Area</span>
+                                        <span class="stat-value">300 sq ft</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-label">Generation</span>
+                                        <span class="stat-value">450 kWh/mo</span>
+                                    </div>
+                                </div>
+                                <p>Perfect for your 340 kWh monthly consumption with surplus for future needs</p>
+                            </div>
+                        </div>
+                        
+                        <div class="financial-summary">
+                            <h3>💰 Financial Summary</h3>
+                            <div class="financial-grid">
+                                <div class="financial-item">
+                                    <span class="item-label">Total Cost</span>
+                                    <span class="item-value">₹1,80,000</span>
+                                </div>
+                                <div class="financial-item">
+                                    <span class="item-label">Govt Subsidy</span>
+                                    <span class="item-value success">-₹78,000</span>
+                                </div>
+                                <div class="financial-item">
+                                    <span class="item-label">Net Cost</span>
+                                    <span class="item-value">₹1,02,000</span>
+                                </div>
+                                <div class="financial-item">
+                                    <span class="item-label">Monthly Savings</span>
+                                    <span class="item-value success">₹2,550</span>
+                                </div>
+                                <div class="financial-item">
+                                    <span class="item-label">Payback Period</span>
+                                    <span class="item-value">3.3 years</span>
+                                </div>
+                                <div class="financial-item">
+                                    <span class="item-label">25-year Savings</span>
+                                    <span class="item-value success">₹7,65,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ROI Chart -->
+                    <div class="roi-chart-container">
+                        <h3>📈 25-Year ROI Projection</h3>
+                        <div class="roi-chart" id="roiChart">
+                            <!-- Chart will be rendered by JavaScript -->
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-color investment"></span>
+                                <span>Investment Recovery</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color savings"></span>
+                                <span>Cumulative Savings</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- System Size Comparison -->
+        <section class="system-comparison">
+            <div class="section-header">
+                <h2>⚖️ System Size Comparison</h2>
+                <p>Choose the right system for your needs</p>
+            </div>
+            
+            <div class="system-grid">
+                <div class="system-card">
+                    <div class="system-header">
+                        <h3>2 kW System</h3>
+                        <span class="system-badge basic">Basic</span>
+                    </div>
+                    <div class="system-price">
+                        <span class="price">₹1,20,000</span>
+                        <span class="price-note">After subsidy: ₹64,000</span>
+                    </div>
+                    <ul class="system-features">
+                        <li>✓ For 150-250 kWh/month usage</li>
+                        <li>✓ Requires 200 sq ft roof</li>
+                        <li>✓ 300 kWh monthly generation</li>
+                        <li>✓ 4.5 year payback period</li>
+                        <li>✓ Best for small families</li>
+                    </ul>
+                    <button class="btn-outline select-system" data-size="2">
+                        Select 2 kW
+                    </button>
+                </div>
+                
+                <div class="system-card popular">
+                    <div class="system-header">
+                        <h3>3 kW System</h3>
+                        <span class="system-badge popular">Most Popular</span>
+                    </div>
+                    <div class="system-price">
+                        <span class="price">₹1,80,000</span>
+                        <span class="price-note">After subsidy: ₹1,02,000</span>
+                    </div>
+                    <ul class="system-features">
+                        <li>✓ For 250-400 kWh/month usage</li>
+                        <li>✓ Requires 300 sq ft roof</li>
+                        <li>✓ 450 kWh monthly generation</li>
+                        <li>✓ 3.3 year payback period</li>
+                        <li>✓ Best for average Indian family</li>
+                        <li>✓ 25-year warranty included</li>
+                    </ul>
+                    <button class="btn-primary select-system" data-size="3">
+                        Select 3 kW
+                    </button>
+                </div>
+                
+                <div class="system-card">
+                    <div class="system-header">
+                        <h3>5 kW System</h3>
+                        <span class="system-badge premium">Premium</span>
+                    </div>
+                    <div class="system-price">
+                        <span class="price">₹3,00,000</span>
+                        <span class="price-note">After subsidy: ₹2,22,000</span>
+                    </div>
+                    <ul class="system-features">
+                        <li>✓ For 400-700 kWh/month usage</li>
+                        <li>✓ Requires 500 sq ft roof</li>
+                        <li>✓ 750 kWh monthly generation</li>
+                        <li>✓ 3.0 year payback period</li>
+                        <li>✓ Best for large families/business</li>
+                        <li>✓ EV charging ready</li>
+                        <li>✓ Net metering benefits</li>
+                    </ul>
+                    <button class="btn-outline select-system" data-size="5">
+                        Select 5 kW
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Financing Options -->
+        <section class="financing-section">
+            <div class="section-header">
+                <h2>🏦 Financing Options</h2>
+                <p>Zero-cost EMI and loan options available</p>
+            </div>
+            
+            <div class="financing-grid">
+                <div class="financing-card">
+                    <div class="financing-header">
+                        <span class="financing-icon">🏦</span>
+                        <div>
+                            <h3>Bank Loans</h3>
+                            <p class="financing-subtitle">SBI, HDFC, ICICI & More</p>
+                        </div>
+                    </div>
+                    <div class="financing-details">
+                        <div class="detail">
+                            <span>Interest Rate</span>
+                            <span class="value">8.5-10.5% p.a.</span>
+                        </div>
+                        <div class="detail">
+                            <span>Loan Tenure</span>
+                            <span class="value">Up to 10 years</span>
+                        </div>
+                        <div class="detail">
+                            <span>Processing Fee</span>
+                            <span class="value">0.5-1%</span>
+                        </div>
+                    </div>
+                    <button class="btn-outline apply-loan" data-type="bank">
+                        Apply for Loan
+                    </button>
+                </div>
+                
+                <div class="financing-card">
+                    <div class="financing-header">
+                        <span class="financing-icon">💰</span>
+                        <div>
+                            <h3>0% Interest EMI</h3>
+                            <p class="financing-subtitle">Partner NBFCs</p>
+                        </div>
+                    </div>
+                    <div class="financing-details">
+                        <div class="detail">
+                            <span>Interest Rate</span>
+                            <span class="value success">0% for 6 months</span>
+                        </div>
+                        <div class="detail">
+                            <span>EMI Tenure</span>
+                            <span class="value">6-24 months</span>
+                        </div>
+                        <div class="detail">
+                            <span>Processing</span>
+                            <span class="value">Instant approval</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary apply-loan" data-type="emi">
+                        Apply for 0% EMI
+                    </button>
+                </div>
+                
+                <div class="financing-card">
+                    <div class="financing-header">
+                        <span class="financing-icon">🏛️</span>
+                        <div>
+                            <h3>Subsidy-linked Loan</h3>
+                            <p class="financing-subtitle">Govt. Schemes</p>
+                        </div>
+                    </div>
+                    <div class="financing-details">
+                        <div class="detail">
+                            <span>Interest Rate</span>
+                            <span class="value success">7-8% p.a.</span>
+                        </div>
+                        <div class="detail">
+                            <span>Subsidy First</span>
+                            <span class="value">₹78,000 upfront</span>
+                        </div>
+                        <div class="detail">
+                            <span>Moratorium</span>
+                            <span class="value">6 months</span>
+                        </div>
+                    </div>
+                    <button class="btn-outline apply-loan" data-type="subsidy">
+                        Check Eligibility
+                    </button>
+                </div>
+            </div>
+            
+            <!-- EMI Calculator -->
+            <div class="emi-calculator">
+                <h3>📱 EMI Calculator</h3>
+                <div class="emi-inputs">
+                    <div class="form-group">
+                        <label for="loanAmount">Loan Amount (₹)</label>
+                        <input type="number" id="loanAmount" value="102000" min="50000" max="500000">
+                    </div>
+                    <div class="form-group">
+                        <label for="interestRate">Interest Rate (% p.a.)</label>
+                        <input type="number" id="interestRate" value="9.5" min="0" max="20" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="loanTenure">Loan Tenure (months)</label>
+                        <input type="number" id="loanTenure" value="60" min="6" max="120">
+                    </div>
+                    <button class="btn-secondary" id="calculateEMI">
+                        Calculate EMI
+                    </button>
+                </div>
+                <div class="emi-results" id="emiResults" style="display: none;">
+                    <div class="emi-summary">
+                        <div class="emi-item">
+                            <span class="emi-label">Monthly EMI</span>
+                            <span class="emi-value">₹2,145</span>
+                        </div>
+                        <div class="emi-item">
+                            <span class="emi-label">Total Interest</span>
+                            <span class="emi-value">₹26,700</span>
+                        </div>
+                        <div class="emi-item">
+                            <span class="emi-label">Total Payment</span>
+                            <span class="emi-value">₹1,28,700</span>
+                        </div>
+                    </div>
+                    <div class="emi-note">
+                        <span class="note-icon">💡</span>
+                        <span>Your monthly savings (₹2,550) are higher than EMI (₹2,145). Positive cash flow from Day 1!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Vendor Marketplace -->
+        <section class="marketplace-section">
+            <div class="section-header">
+                <h2>🏪 Solar Marketplace</h2>
+                <p>Connect with certified installers & compare products</p>
+            </div>
+            
+            <div class="marketplace-tabs">
+                <div class="tab-header">
+                    <button class="tab-btn active" data-tab="installers">🏢 Certified Installers</button>
+                    <button class="tab-btn" data-tab="products">🔧 Products & Brands</button>
+                    <button class="tab-btn" data-tab="reviews">⭐ Customer Reviews</button>
+                </div>
+                
+                <div class="tab-content active" id="installersTab">
+                    <div class="installers-grid">
+                        <div class="installer-card">
+                            <div class="installer-header">
+                                <div class="installer-logo">🔆</div>
+                                <div>
+                                    <h3>Tata Power Solar</h3>
+                                    <div class="installer-rating">
+                                        <span class="stars">★★★★★</span>
+                                        <span class="rating">4.8 (1.2k reviews)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="installer-details">
+                                <div class="detail">
+                                    <span>Experience</span>
+                                    <span class="value">30+ years</span>
+                                </div>
+                                <div class="detail">
+                                    <span>Warranty</span>
+                                    <span class="value">25 years</span>
+                                </div>
+                                <div class="detail">
+                                    <span>Cities</span>
+                                    <span class="value">50+ cities</span>
+                                </div>
+                            </div>
+                            <div class="installer-actions">
+                                <button class="btn-outline request-quote" data-installer="tata">
+                                    Request Quote
+                                </button>
+                                <button class="btn-icon">
+                                    📞
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="installer-card">
+                            <div class="installer-header">
+                                <div class="installer-logo">☀️</div>
+                                <div>
+                                    <h3>Surya Power Solutions</h3>
+                                    <div class="installer-rating">
+                                        <span class="stars">★★★★☆</span>
+                                        <span class="rating">4.6 (850 reviews)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="installer-details">
+                                <div class="detail">
+                                    <span>Experience</span>
+                                    <span class="value">15+ years</span>
+                                </div>
+                                <div class="detail">
+                                    <span>Warranty</span>
+                                    <span class="value">20 years</span>
+                                </div>
+                                <div class="detail">
+                                    <span>Cities</span>
+                                    <span class="value">25+ cities</span>
+                                </div>
+                            </div>
+                            <div class="installer-actions">
+                                <button class="btn-outline request-quote" data-installer="surya">
+                                    Request Quote
+                                </button>
+                                <button class="btn-icon">
+                                    📞
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="installer-card">
+                            <div class="installer-header">
+                                <div class="installer-logo">⚡</div>
+                                <div>
+                                    <h3>Green Energy Installers</h3>
+                                    <div class="installer-rating">
+                                        <span class="stars">★★★★☆</span>
+                                        <span class="rating">4.5 (620 reviews)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="installer-details">
+                                <div class="detail">
+                                    <span>Experience</span>
+                                    <span class="value">10+ years</span>
+                                </div>
+                                <div class="detail">
+                                    <span>Warranty</span>
+                                    <span class="value">15 years</span>
+                                </div>
+                                <div class="detail">
+                                    <span>Cities</span>
+                                    <span class="value">15+ cities</span>
+                                </div>
+                            </div>
+                            <div class="installer-actions">
+                                <button class="btn-outline request-quote" data-installer="green">
+                                    Request Quote
+                                </button>
+                                <button class="btn-icon">
+                                    📞
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="productsTab">
+                    <!-- Products content would go here -->
+                </div>
+                
+                <div class="tab-content" id="reviewsTab">
+                    <!-- Reviews content would go here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="section-header">
+                <h2>❓ Frequently Asked Questions</h2>
+                <p>Everything you need to know about going solar</p>
+            </div>
+            
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>How long does installation take?</h3>
+                    <p>Typically 3-7 days after approval. Government subsidy approval takes 30-45 days.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>What maintenance is required?</h3>
+                    <p>Minimal maintenance. Just clean panels every 6 months. No moving parts to wear out.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>Will it work during power cuts?</h3>
+                    <p>Only if you install batteries. Grid-tied systems shut down during outages for safety.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>Can I get a free consultation?</h3>
+                    <p>Yes! All our partner installers provide free site survey and consultation.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>What about rainy/cloudy days?</h3>
+                    <p>Solar panels work at 10-25% efficiency on cloudy days. Net metering covers deficits.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>Is financing available?</h3>
+                    <p>Yes, through partner banks with special solar loan rates and 0% EMI options.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="main-footer" aria-labelledby="footer-heading">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Urja<span>Saathi</span></span>
+                </a>
+                <p class="footer-tagline">Smart Energy Management for Indian Homes</p>
+                <div class="app-links">
+                    <button class="btn-install" id="installBtn">📱 Install App</button>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html">Dashboard</a></li>
+                        <li><a href="appliances.html">Appliance Control</a></li>
+                        <li><a href="solar.html">Solar Calculator</a></li>
+                        <li><a href="ai-assistant.html">AI Assistant</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="subsidies.html">Government Schemes</a></li>
+                        <li><a href="#">Energy Tips</a></li>
+                        <li><a href="#">Calculator Tools</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2024 UrjaSaathi. Made with ❤️ for Indian households.</p>
+            <p>Solar calculations are estimates. Actual results may vary based on location and usage patterns.</p>
+        </div>
+    </footer>
+    
+    <!-- Request Quote Modal -->
+    <div class="modal" id="quoteModal" role="dialog" aria-labelledby="quoteModalTitle" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="quoteModalTitle">Request Solar Quote</h3>
+                <button class="modal-close" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="quoteForm">
+                    <div class="form-group">
+                        <label for="quoteName">Full Name</label>
+                        <input type="text" id="quoteName" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quotePhone">Mobile Number</label>
+                        <input type="tel" id="quotePhone" required pattern="[0-9]{10}" placeholder="10-digit mobile number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quoteEmail">Email Address</label>
+                        <input type="email" id="quoteEmail" required placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quoteSystem">Preferred System Size</label>
+                        <select id="quoteSystem" required>
+                            <option value="3">3 kW System (Recommended)</option>
+                            <option value="2">2 kW System</option>
+                            <option value="5">5 kW System</option>
+                            <option value="custom">Custom Size</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quoteAddress">Installation Address</label>
+                        <textarea id="quoteAddress" rows="3" required placeholder="Full address with city and pincode"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" required>
+                            I agree to share my details with certified installers
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            Request Quote
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/loading.js" defer></script>
+    <script src="scripts/solar.js" defer></script>
+</body>
+</html>

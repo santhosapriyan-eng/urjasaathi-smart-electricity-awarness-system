@@ -1,0 +1,663 @@
+/* UrjaSaathi - Appliances Page Styles */
+
+/* Appliances Page Layout */
+.appliances-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-6);
+}
+
+.page-header {
+    margin-bottom: var(--space-8);
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-2);
+}
+
+.page-header p {
+    color: var(--text-medium);
+    font-size: 1.125rem;
+}
+
+/* Quick Stats Bar */
+.quick-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+}
+
+.quick-stats-bar .stat {
+    background-color: var(--card-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-base);
+}
+
+.quick-stats-bar .stat:hover {
+    transform: translateY(-4px);
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-medium);
+    margin-bottom: var(--space-2);
+}
+
+.stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    font-family: var(--font-mono);
+}
+
+/* Control Center Layout */
+.appliances-control-center {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: var(--space-8);
+}
+
+/* Left Panel - Controls */
+.control-panel {
+    background-color: var(--card-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+.filters-section,
+.bulk-actions,
+.tips-section {
+    margin-bottom: var(--space-8);
+}
+
+.filters-section h3,
+.bulk-actions h3,
+.tips-section h3 {
+    font-size: 1.125rem;
+    margin-bottom: var(--space-4);
+    color: var(--text-dark);
+}
+
+/* Search Box */
+.search-box {
+    position: relative;
+    margin-bottom: var(--space-6);
+}
+
+.search-box input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4) var(--space-3) var(--space-10);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    transition: border-color var(--transition-fast);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+}
+
+/* Category Filters */
+.filter-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: none;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--text-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+}
+
+.filter-btn.active {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+}
+
+/* Sort Options */
+.sort-options select {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    background-color: white;
+    cursor: pointer;
+}
+
+/* Bulk Actions */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.btn-bulk {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--bg-light);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-bulk:hover {
+    border-color: var(--primary-blue);
+    background-color: white;
+    transform: translateY(-2px);
+}
+
+.btn-bulk span {
+    font-size: 1.25rem;
+}
+
+/* Tips Section */
+.tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tips-list li {
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.875rem;
+    color: var(--text-medium);
+}
+
+.tips-list li:last-child {
+    border-bottom: none;
+}
+
+/* Right Panel - Appliances Grid */
+.appliances-grid-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+}
+
+.appliances-grid-section h2 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+/* Appliances Grid */
+.appliances-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.appliance-card {
+    background-color: var(--card-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+    border: 2px solid transparent;
+    transition: all var(--transition-base);
+    position: relative;
+}
+
+.appliance-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-blue);
+}
+
+.appliance-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.appliance-icon-large {
+    font-size: 2rem;
+    width: 60px;
+    height: 60px;
+    background-color: var(--bg-light);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.appliance-card-title h4 {
+    margin: 0 0 var(--space-1);
+    font-size: 1.125rem;
+}
+
+.appliance-location {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    background-color: var(--bg-light);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    display: inline-block;
+}
+
+.appliance-efficiency {
+    position: absolute;
+    top: var(--space-6);
+    right: var(--space-6);
+}
+
+.efficiency-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--bg-light);
+}
+
+.efficiency-badge.a\+\+ {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--energy-green);
+}
+
+.efficiency-badge.a\+ {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--energy-green);
+}
+
+.efficiency-badge.b {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--solar-yellow);
+}
+
+.efficiency-badge.c {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--alert-red);
+}
+
+/* Appliance Stats */
+.appliance-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.appliance-stats .stat {
+    text-align: center;
+}
+
+.appliance-stats .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-bottom: var(--space-1);
+}
+
+.appliance-stats .stat-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* Appliance Controls */
+.appliance-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+}
+
+.appliance-controls .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.uncontrollable-label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    background-color: var(--bg-light);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+}
+
+.appliance-controls .btn-icon {
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.appliance-controls .btn-icon:hover {
+    background-color: var(--bg-light);
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+}
+
+/* Appliance Schedule */
+.appliance-schedule {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background-color: var(--bg-light);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    color: var(--text-medium);
+}
+
+.schedule-icon {
+    font-size: 1rem;
+}
+
+.schedule-info {
+    flex: 1;
+}
+
+/* Scheduling Section */
+.scheduling-section {
+    background-color: var(--card-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+}
+
+.schedules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.schedule-card {
+    background-color: var(--bg-light);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    border: 1px solid var(--border-light);
+    transition: all var(--transition-fast);
+}
+
+.schedule-card:hover {
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+}
+
+.schedule-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.schedule-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.schedule-header h4 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.schedule-time {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+.schedule-appliances {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.appliance-tag {
+    font-size: 0.75rem;
+    background-color: white;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-light);
+}
+
+.schedule-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.75rem;
+    color: var(--text-medium);
+}
+
+.schedule-status.active .status-dot {
+    background-color: var(--energy-green);
+}
+
+.schedule-status .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background-color: var(--text-light);
+}
+
+/* Automation Rules */
+.automation-rules h3 {
+    font-size: 1.125rem;
+    margin-bottom: var(--space-4);
+}
+
+.rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.rule-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3);
+    background-color: var(--bg-light);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+}
+
+.rule-content h4 {
+    margin: 0 0 var(--space-1);
+    font-size: 0.875rem;
+}
+
+.rule-content p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--text-medium);
+}
+
+/* Modal Styles for Appliances */
+#applianceModal .modal-content,
+#addApplianceModal .modal-content {
+    max-width: 500px;
+}
+
+.appliance-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.detail-section {
+    padding: var(--space-4);
+    background-color: var(--bg-light);
+    border-radius: var(--radius-md);
+}
+
+.detail-section h4 {
+    margin: 0 0 var(--space-3);
+    color: var(--text-medium);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.detail-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .appliances-control-center {
+        grid-template-columns: 1fr;
+    }
+    
+    .control-panel {
+        position: static;
+    }
+    
+    .appliances-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .appliances-page {
+        padding: var(--space-4);
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .quick-stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .appliances-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: var(--space-4);
+        align-items: stretch;
+    }
+    
+    .schedules-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animation for appliance cards */
+@keyframes applianceCardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.appliance-card {
+    animation: applianceCardAppear 0.3s ease-out;
+}
+
+/* Custom scrollbar for appliance grid */
+.appliances-grid {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
+}
+
+.appliances-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.appliances-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.appliances-grid::-webkit-scrollbar-thumb {
+    background-color: var(--border-light);
+    border-radius: var(--radius-full);
+}

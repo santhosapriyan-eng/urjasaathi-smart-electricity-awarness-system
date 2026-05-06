@@ -1,0 +1,321 @@
+/* UrjaSaathi - Dashboard Specific Styles */
+
+/* Analytics Dashboard Layout */
+.dashboard-analytics {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-6);
+}
+
+.analytics-header {
+    margin-bottom: var(--space-8);
+}
+
+.analytics-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-2);
+}
+
+.analytics-header p {
+    color: var(--text-medium);
+    font-size: 1.125rem;
+    margin-bottom: var(--space-6);
+}
+
+/* Date Range Selector */
+.date-range-selector {
+    background-color: var(--card-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-md);
+}
+
+.date-range-buttons {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.date-range-btn {
+    padding: var(--space-2) var(--space-4);
+    background: none;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.date-range-btn:hover {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+}
+
+.date-range-btn.active {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+}
+
+.custom-date-picker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-light);
+}
+
+.custom-date-picker input[type="date"] {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-family: var(--font-primary);
+}
+
+.custom-date-picker span {
+    color: var(--text-medium);
+}
+
+/* Analytics Grid */
+.analytics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.grid-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.half-width {
+    grid-column: span 1;
+}
+
+/* Chart Cards */
+.chart-card {
+    background-color: var(--card-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+}
+
+.chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+}
+
+.chart-card-header h2,
+.chart-card-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.chart-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.chart-container {
+    height: 300px;
+    position: relative;
+}
+
+/* Metrics Card */
+.metrics-card {
+    background-color: var(--card-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+}
+
+.metrics-card-header {
+    margin-bottom: var(--space-6);
+}
+
+.metrics-card-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: var(--text-medium);
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.metric-progress {
+    height: 8px;
+    background-color: var(--border-light);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--gradient-success);
+    border-radius: var(--radius-full);
+}
+
+.metric-change {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.metric-change.positive {
+    color: var(--energy-green);
+}
+
+.metric-change.negative {
+    color: var(--alert-red);
+}
+
+/* Actions Card */
+.actions-card {
+    background-color: var(--card-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+}
+
+.actions-card-header {
+    margin-bottom: var(--space-6);
+}
+
+.actions-card-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-6);
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background-color: var(--bg-light);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.action-btn:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary-blue);
+    box-shadow: var(--shadow-lg);
+}
+
+.action-icon {
+    font-size: 2rem;
+}
+
+.action-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* Responsive Design for Dashboard */
+@media (max-width: 1024px) {
+    .grid-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .half-width {
+        grid-column: 1 / -1;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-analytics {
+        padding: var(--space-4);
+    }
+    
+    .analytics-header h1 {
+        font-size: 2rem;
+    }
+    
+    .date-range-buttons {
+        justify-content: center;
+    }
+    
+    .custom-date-picker {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .chart-card,
+    .metrics-card,
+    .actions-card {
+        padding: var(--space-4);
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Print Styles for Dashboard */
+@media print {
+    .navbar,
+    .analytics-header .date-range-selector,
+    .chart-actions,
+    .actions-card,
+    .main-footer {
+        display: none !important;
+    }
+    
+    .chart-card,
+    .metrics-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid var(--border-medium);
+    }
+    
+    .analytics-header h1 {
+        color: black;
+    }
+    
+    .analytics-header p {
+        color: black;
+    }
+}

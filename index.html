@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UrjaSaathi - Smart Energy Management for Indian Households">
+    <meta name="theme-color" content="#2563eb">
+    <title>UrjaSaathi - Smart Energy Companion</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="styles/main.css" as="style">
+    <link rel="preload" href="scripts/main.js" as="script">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Inline Critical CSS -->
+    <style>
+        /* Critical CSS - Minimal styles to prevent FOUC */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-blue: #2563eb;
+            --energy-green: #10b981;
+            --solar-yellow: #f59e0b;
+            --alert-red: #ef4444;
+            --bg-light: #f9fafb;
+            --card-white: #ffffff;
+            --border-gray: #e5e7eb;
+            --text-dark: #1f2937;
+            --text-medium: #6b7280;
+            --text-light: #9ca3af;
+        }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+        .loading-progress {
+            width: 300px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .loading-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .loading-message {
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            text-align: center;
+            min-height: 24px;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+    
+    <!-- Deferred CSS -->
+    <link rel="stylesheet" href="styles/main.css" defer>
+    <link rel="stylesheet" href="styles/loading.css" defer>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="55" stroke="white" stroke-width="4"/>
+                <path d="M60 20V100" stroke="white" stroke-width="4"/>
+                <path d="M20 60H100" stroke="white" stroke-width="4"/>
+                <circle cx="60" cy="60" r="35" fill="white" fill-opacity="0.2"/>
+                <path d="M45 45L75 75M45 75L75 45" stroke="white" stroke-width="4"/>
+            </svg>
+        </div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
+        <div class="loading-message" id="loadingMessage">Initializing smart grid system...</div>
+    </div>
+    
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+    
+    <!-- Main Navigation -->
+    <nav class="navbar" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Urja<span>Saathi</span></span>
+            </a>
+            
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span class="hamburger"></span>
+            </button>
+            
+            <div class="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item active"><a href="index.html" aria-current="page">Dashboard</a></li>
+                    <li class="nav-item"><a href="appliances.html">Appliances</a></li>
+                    <li class="nav-item"><a href="subsidies.html">Subsidies</a></li>
+                    <li class="nav-item"><a href="solar.html">Solar</a></li>
+                    <li class="nav-item"><a href="community.html">Community</a></li>
+                    <li class="nav-item"><a href="ai-assistant.html">AI Assistant</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="btn-notification" aria-label="Notifications">
+                        <span class="notification-badge">3</span>
+                        <span>🔔</span>
+                    </button>
+                    <a href="profile.html" class="btn-profile">
+                        <span class="profile-avatar">AS</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 id="hero-title" class="hero-title">
+                        <span class="title-line">UrjaSaathi -</span>
+                        <span class="title-line">Smart Energy Companion</span>
+                    </h1>
+                    <p class="hero-subtitle">Save up to 25% on electricity bills with intelligent monitoring & AI insights</p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="userCount">25,847</span>
+                            <span class="stat-label">Active Users</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">₹8.2<span class="stat-unit">Cr</span></span>
+                            <span class="stat-label">Total Savings</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">1,847</span>
+                            <span class="stat-label">Tons CO₂ Reduced</span>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-actions">
+                        <a href="register.html" class="btn btn-primary">
+                            Get Started Free
+                            <span class="btn-icon">→</span>
+                        </a>
+                        <button class="btn btn-secondary" id="demoBtn">
+                            <span class="btn-icon">▶</span>
+                            Watch Demo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="hero-visual">
+                    <div class="energy-visualization" id="energyViz"></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Quick Stats Section -->
+        <section class="quick-stats" aria-labelledby="stats-title">
+            <div class="section-header">
+                <h2 id="stats-title">Live Energy Dashboard</h2>
+                <p class="section-subtitle">Real-time monitoring updated every 5 seconds</p>
+            </div>
+            
+            <div class="stats-grid">
+                <!-- Current Usage Card -->
+                <div class="stat-card" data-card="usage">
+                    <div class="card-header">
+                        <span class="card-icon">⚡</span>
+                        <h3 class="card-title">Current Usage</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value" id="currentUsage">1.4 kW</div>
+                        <div class="card-trend trend-up">
+                            <span class="trend-icon">↑</span>
+                            <span class="trend-text">12% from yesterday</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-time">Updated just now</span>
+                    </div>
+                </div>
+                
+                <!-- Today's Cost Card -->
+                <div class="stat-card" data-card="cost">
+                    <div class="card-header">
+                        <span class="card-icon">💰</span>
+                        <h3 class="card-title">Today's Cost</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value">₹<span id="todayCost">142</span></div>
+                        <div class="card-trend trend-down">
+                            <span class="trend-icon">↓</span>
+                            <span class="trend-text">8% savings achieved</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-label">Daily Average</span>
+                    </div>
+                </div>
+                
+                <!-- Solar Generation Card -->
+                <div class="stat-card" data-card="solar">
+                    <div class="card-header">
+                        <span class="card-icon">☀️</span>
+                        <h3 class="card-title">Solar Generation</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value" id="solarGen">2.8 kWh</div>
+                        <div class="card-trend trend-up">
+                            <span class="trend-icon">↑</span>
+                            <span class="trend-text">15% optimal output</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-label">Last 24 hours</span>
+                    </div>
+                </div>
+                
+                <!-- Monthly Savings Card -->
+                <div class="stat-card" data-card="savings">
+                    <div class="card-header">
+                        <span class="card-icon">🏆</span>
+                        <h3 class="card-title">Monthly Savings</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value">₹<span id="monthlySavings">1,250</span></div>
+                        <div class="card-trend trend-up">
+                            <span class="trend-icon">↑</span>
+                            <span class="trend-text">₹425 with AI optimization</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-time">This month</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Main Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Left Column -->
+            <div class="dashboard-left">
+                <!-- Energy Consumption Chart -->
+                <section class="chart-section" aria-labelledby="chart-title">
+                    <div class="chart-header">
+                        <h3 id="chart-title">Energy Consumption (24 Hours)</h3>
+                        <div class="chart-controls">
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" data-metric="power">Power (kW)</button>
+                                <button class="toggle-btn" data-metric="cost">Cost (₹)</button>
+                            </div>
+                            <button class="btn-icon" aria-label="Refresh data" id="refreshChart">
+                                <span>↻</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="consumptionChart" aria-label="Energy consumption line chart" role="img"></canvas>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: #2563eb"></span>
+                            <span>Your Usage</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: #10b981"></span>
+                            <span>Solar Generation</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: #9ca3af"></span>
+                            <span>Neighborhood Average</span>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- AI Assistant Widget -->
+                <section class="ai-widget" aria-labelledby="ai-title">
+                    <div class="widget-header">
+                        <h3 id="ai-title">💡 AI Energy Assistant</h3>
+                        <button class="btn-voice" aria-label="Voice commands" id="voiceBtn">
+                            <span>🎤</span>
+                        </button>
+                    </div>
+                    <div class="ai-recommendations">
+                        <div class="recommendation-card">
+                            <div class="rec-icon">🌡️</div>
+                            <div class="rec-content">
+                                <h4>Turn off AC 30 mins earlier</h4>
+                                <p>Save ₹45 daily by adjusting thermostat</p>
+                                <button class="btn-action">Apply Suggestion</button>
+                            </div>
+                        </div>
+                        <div class="recommendation-card">
+                            <div class="rec-icon">💡</div>
+                            <div class="rec-content">
+                                <h4>Replace 2 old bulbs with LEDs</h4>
+                                <p>Save ₹180/month with energy-efficient bulbs</p>
+                                <button class="btn-action">Shop Now</button>
+                            </div>
+                        </div>
+                        <div class="recommendation-card">
+                            <div class="rec-icon">☀️</div>
+                            <div class="rec-content">
+                                <h4>Consider 3kW solar installation</h4>
+                                <p>ROI in 4 years with current subsidies</p>
+                                <button class="btn-action">Calculate</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="dashboard-right">
+                <!-- Top Appliances Widget -->
+                <section class="appliances-widget" aria-labelledby="appliances-title">
+                    <div class="widget-header">
+                        <h3 id="appliances-title">⚡ Top Energy Consumers</h3>
+                        <a href="appliances.html" class="btn-link">View All →</a>
+                    </div>
+                    <div class="appliances-list" id="appliancesList">
+                        <!-- Dynamic content loaded by JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Government Subsidies -->
+                <section class="subsidies-widget" aria-labelledby="subsidies-title">
+                    <div class="widget-header">
+                        <h3 id="subsidies-title">🏛️ Government Subsidies</h3>
+                        <span class="badge-eligible">You're Eligible</span>
+                    </div>
+                    <div class="subsidy-cards">
+                        <div class="subsidy-card">
+                            <div class="subsidy-header">
+                                <span class="scheme-icon">☀️</span>
+                                <div>
+                                    <h4>PM Surya Ghar Yojana</h4>
+                                    <p class="scheme-amount">Up to ₹78,000 subsidy</p>
+                                </div>
+                            </div>
+                            <p class="scheme-desc">300 units free electricity per month</p>
+                            <div class="scheme-status">
+                                <span class="status-dot eligible"></span>
+                                <span>Eligible</span>
+                            </div>
+                            <button class="btn-scheme">Apply Now</button>
+                        </div>
+                        
+                        <div class="subsidy-card">
+                            <div class="subsidy-header">
+                                <span class="scheme-icon">💡</span>
+                                <div>
+                                    <h4>UJALA LED Scheme</h4>
+                                    <p class="scheme-amount">LED bulbs at ₹70 each</p>
+                                </div>
+                            </div>
+                            <p class="scheme-desc">Save 80% on lighting costs</p>
+                            <div class="scheme-status">
+                                <span class="status-dot available"></span>
+                                <span>Available</span>
+                            </div>
+                            <button class="btn-scheme">Order Now</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Community Leaderboard -->
+                <section class="community-widget" aria-labelledby="community-title">
+                    <div class="widget-header">
+                        <h3 id="community-title">🏆 Community Leaderboard</h3>
+                        <a href="community.html" class="btn-link">Join Challenge</a>
+                    </div>
+                    <div class="leaderboard">
+                        <div class="leaderboard-header">
+                            <span>Rank</span>
+                            <span>Name</span>
+                            <span>Savings</span>
+                        </div>
+                        <div class="leaderboard-list">
+                            <!-- Dynamic content -->
+                        </div>
+                        <div class="your-rank">
+                            <span class="rank-number">#4</span>
+                            <span class="rank-name">Amit Sharma</span>
+                            <span class="rank-savings">₹1,250</span>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Environmental Impact -->
+                <section class="environment-widget" aria-labelledby="environment-title">
+                    <div class="widget-header">
+                        <h3 id="environment-title">🌱 Your Environmental Impact</h3>
+                    </div>
+                    <div class="impact-stats">
+                        <div class="impact-item">
+                            <span class="impact-icon">🌳</span>
+                            <div>
+                                <span class="impact-value" id="treesSaved">42</span>
+                                <span class="impact-label">Trees Saved</span>
+                            </div>
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-icon">☁️</span>
+                            <div>
+                                <span class="impact-value">1.2</span>
+                                <span class="impact-label">Tons CO₂ Reduced</span>
+                            </div>
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-icon">💧</span>
+                            <div>
+                                <span class="impact-value">8,400</span>
+                                <span class="impact-label">Liters Water Saved</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="efficiency-meter">
+                        <div class="meter-header">
+                            <span>Energy Efficiency Score</span>
+                            <span class="meter-value">78%</span>
+                        </div>
+                        <div class="meter-bar">
+                            <div class="meter-fill" style="width: 78%"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="main-footer" aria-labelledby="footer-heading">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Urja<span>Saathi</span></span>
+                </a>
+                <p class="footer-tagline">Smart Energy Management for Indian Homes</p>
+                <div class="app-links">
+                    <button class="btn-install" id="installBtn">📱 Install App</button>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                        <li><a href="appliances.html">Appliance Control</a></li>
+                        <li><a href="solar.html">Solar Calculator</a></li>
+                        <li><a href="ai-assistant.html">AI Assistant</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="subsidies.html">Government Schemes</a></li>
+                        <li><a href="#">Energy Tips</a></li>
+                        <li><a href="#">Calculator Tools</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2024 UrjaSaathi. Made with ❤️ for Indian households.</p>
+            <p>Data updated in real-time. Actual savings may vary based on usage patterns.</p>
+        </div>
+    </footer>
+    
+    <!-- Demo Modal -->
+    <div class="modal" id="demoModal" role="dialog" aria-labelledby="demoModalTitle" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="demoModalTitle">UrjaSaathi Demo</h3>
+                <button class="modal-close" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="demo-video">
+                    <!-- Video placeholder -->
+                    <div class="video-placeholder">
+                        <span>▶</span>
+                        <p>Product demo video will play here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/loading.js" defer></script>
+    <script src="scripts/charts.js" defer></script>
+    <script src="scripts/appliances.js" defer></script>
+    
+    <!-- Register Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
